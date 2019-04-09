@@ -3,6 +3,7 @@ package main
 import (
 	"LearnGolang/ccmouse_go/interface/real"
 	"fmt"
+	"time"
 )
 
 //	接口
@@ -19,8 +20,11 @@ func main() {
 
 	var r Retriever
 	//	实现者
-	r = real.Retriever{}
-	fmt.Println(download(r))
+	r = real.Retriever{
+		UserAgent: "Mozilla/5.0",
+		Timeout:   time.Minute,
+	}
+	//fmt.Println(download(r))
 	fmt.Println()
 	fmt.Printf("%T %v", r, r)
 }
