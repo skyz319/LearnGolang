@@ -11,9 +11,16 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
+//	请求延时 500毫秒
+var rateLimiter = time.Tick(100 * time.Millisecond)
+
 func Fetch(url string) ([]byte, error) {
+
+	//	请求延时
+	<-rateLimiter
 
 	client := &http.Client{}
 

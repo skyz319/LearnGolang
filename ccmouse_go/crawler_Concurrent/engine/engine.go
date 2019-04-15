@@ -6,41 +6,91 @@ import (
 	"log"
 )
 
-func Ren(seeds ...Request) {
+type ConcurrentEngine struct {
+	Scheduler   Scheduler //	调度器
+	WorkerCount int       //	worker 数量
+}
 
-	//	请求队列
-	var requestsQueue []Request
+//	调度者接口
+type Scheduler interface {
+	Submit(Request)
+	ConfigureMasterWorkChan(chan Request)
+}
+
+func (e *ConcurrentEngine) Ren(seeds ...Request) {
+
+	//	输入/输出 队列
+	in := make(chan Request)
+	out := make(chan ParseResult)
+	//	worker队列
+	e.Scheduler.ConfigureMasterWorkChan(in)
+
+	for i := 0; i < e.WorkerCount; i++ {
+
+		//	创建worker
+		e.createWorker(in, out)
+	}
 
 	for _, r := range seeds {
-
-		requestsQueue = append(requestsQueue, r)
+		//	将任务放入调度器
+		e.Scheduler.Submit(r)
 	}
 
-	for len(requestsQueue) > 0 {
+	//	收取返回的数据
+	for {
 
-		//	取出第一个request并抓取其内容
-		r := requestsQueue[0]
-		requestsQueue = requestsQueue[1:]
+		result := <-out
 
-		log.Printf("engin.go >> Fetching %s", r.Url)
+		//	计数
+		itemCount := 0
+		for _, item := range result.Items {
 
-		//	抓取内容
-		body, err := fetcher.Fetch(r.Url)
-		if err != nil {
-
-			//	忽略取出的错误Url
-			log.Printf("engin.go >> Fetcher: error "+"fetching url %s: %v\n", r.Url, err)
-			continue
+			log.Printf("Got item #%d: %s\n", itemCount, item)
 		}
 
-		//	将任务中的request添加进队列
-		parseResult := r.ParserFunc(body)
-		//	...将requests中所有内容展开并添加到指定队列
-		requestsQueue = append(requestsQueue, parseResult.Requests...)
+		//	将返回数据中的request 送入调度者
+		for _, req := range result.Requests {
 
-		for _, item := range parseResult.Items {
-
-			log.Printf("engin.go >> Got item %v ", item)
+			e.Scheduler.Submit(req)
 		}
 	}
+}
+
+func (e ConcurrentEngine) createWorker(in chan Request, out chan ParseResult) {
+
+	go func() {
+
+		for {
+
+			request := <-in
+
+			result, err := e.worker(request)
+
+			if err != nil {
+
+				continue
+			}
+
+			out <- result
+		}
+	}()
+}
+
+func (e ConcurrentEngine) worker(r Request) (ParseResult, error) {
+
+	log.Printf("engin.go >> Fetching %s", r.Url)
+
+	//	抓取内容
+	body, err := fetcher.Fetch(r.Url)
+	if err != nil {
+
+		//	忽略取出的错误Url
+		log.Printf("engin.go >> Fetcher: error "+"fetching url %s: %v\n", r.Url, err)
+
+		return ParseResult{}, err
+	}
+
+	//	将任务中的request添加进队列
+	return r.ParserFunc(body), nil
+
 }
