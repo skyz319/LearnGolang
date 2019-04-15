@@ -6,9 +6,9 @@ const Exclusion = "男士"
 
 //	限制抓取数量
 const LimitCity = true
-const CityNum = 10
+const CityNum = 20
 const LimitUser = false
-const UserNum = 50
+const UserNum = 10
 
 type Request struct {
 	Url        string
