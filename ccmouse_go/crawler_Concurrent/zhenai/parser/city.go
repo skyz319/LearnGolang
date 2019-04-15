@@ -2,7 +2,7 @@
 package parser
 
 import (
-	"LearnGolang/ccmouse_go/crawler/engine"
+	"LearnGolang/ccmouse_go/crawler_Concurrent/engine"
 	"fmt"
 	"regexp"
 )

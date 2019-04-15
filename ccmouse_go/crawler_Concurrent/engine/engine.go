@@ -2,7 +2,7 @@
 package engine
 
 import (
-	"LearnGolang/ccmouse_go/crawler/fetcher"
+	"LearnGolang/ccmouse_go/crawler_Concurrent/fetcher"
 	"log"
 )
 

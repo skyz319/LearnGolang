@@ -1,8 +1,8 @@
 package main
 
 import (
-	"LearnGolang/ccmouse_go/crawler/engine"
-	"LearnGolang/ccmouse_go/crawler/zhenai/parser"
+	"LearnGolang/ccmouse_go/crawler_Concurrent/engine"
+	"LearnGolang/ccmouse_go/crawler_Concurrent/zhenai/parser"
 )
 
 const BaseURL = "http://www.zhenai.com/zhenghun"
