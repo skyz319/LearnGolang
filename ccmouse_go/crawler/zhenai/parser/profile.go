@@ -3,45 +3,56 @@ package parser
 import (
 	"LearnGolang/ccmouse_go/crawler/engine"
 	"regexp"
+	"strings"
 )
 
-//	昵称
-var nickRe = regexp.MustCompile(`<h1 class="nickName" .*?>([^<]+)</h1>`)
+type UserInfo struct {
+	nick   string   //	昵称
+	gender string   //	性别
+	info   []string //	用户信息
+	demand []string //	择偶条件
+	photo  []string //	照片列表
+}
 
 //	个人信息1
-var infoRe1 = regexp.MustCompile(`<div class="m-btn .*?>([^<]+)</div>`)
-
-//	个人信息2
-var infoR22 = regexp.MustCompile(`<div class="m-btn pink" .*?>([^<]+)</div>`)
+var infoRe = regexp.MustCompile(`<div class="m-btn .*?>([^<]+)</div>`)
 
 //	择偶条件
 var demandRe = regexp.MustCompile(`<div class="m-btn" .*?>([^<]+)</div>`)
 
 //	相片
-var photoRe = regexp.MustCompile(`<div .*? href="([^"]+)" class="photoItem z-cursor-big.*?">`)
+var photoRe = regexp.MustCompile(`"photoURL":"([^"]+)"`)
 
-//	<div class="purple-btns" data-v-bff6f798=""><div class="m-btn purple" data-v-bff6f798="">未婚</div><div class="m-btn purple" data-v-bff6f798="">43岁</div><div class="m-btn purple" data-v-bff6f798="">魔羯座(12.22-01.19)</div><div class="m-btn purple" data-v-bff6f798="">166cm</div><div class="m-btn purple" data-v-bff6f798="">56kg</div><div class="m-btn purple" data-v-bff6f798="">工作地:鞍山铁东区</div><div class="m-btn purple" data-v-bff6f798="">月收入:3千以下</div><div class="m-btn purple" data-v-bff6f798="">美容师</div><div class="m-btn purple" data-v-bff6f798="">中专</div></div>
+func ParseProfile(contents []byte, name, gender string) engine.ParseResult {
 
-func ParseProfile(contents []byte) engine.ParseResult {
+	var userInfo UserInfo
+	userInfo.nick = name
+	userInfo.gender = gender
+	userInfo.info = extractString(contents, infoRe)
+	userInfo.demand = extractString(contents, demandRe)
+	userInfo.photo = extractString(contents, photoRe)
 
-	//re := regexp.MustCompile(ageRe)
-	//match := re.FindAllSubmatch(contents, -1)
-	//
-	//if match != nil {
-	//}
+	//fmt.Printf("UserInfo >> %s\n", userInfo)
 
-	return engine.ParseResult{}
+	result := engine.ParseResult{
+		Items: []interface{}{userInfo},
+	}
+	return result
 }
 
-func extractString(contents []byte, re *regexp.Regexp) string {
+func extractString(contents []byte, re *regexp.Regexp) []string {
 
-	match := re.FindSubmatch(contents)
+	match := re.FindAllSubmatch(contents, -1)
 
-	if len(match) >= 2 {
+	var temp []string
 
-		return string(match[1])
-	} else {
+	for _, items := range match {
 
-		return ""
+		str := string(items[1])
+		//	照片格式中有u002F，需替换
+		temp = append(temp, strings.Replace(str, `\u002F`, `/`, -1))
 	}
+
+	return temp
+
 }

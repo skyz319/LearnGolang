@@ -22,14 +22,14 @@ func Ren(seeds ...Request) {
 		r := requestsQueue[0]
 		requestsQueue = requestsQueue[1:]
 
-		log.Printf("Fetching %s", r.Url)
+		log.Printf("engin.go >> Fetching %s", r.Url)
 
 		//	抓取内容
 		body, err := fetcher.Fetch(r.Url)
 		if err != nil {
 
 			//	忽略取出的错误Url
-			log.Printf("Fetcher: error "+"fetching url %s: %v", r.Url, err)
+			log.Printf("engin.go >> Fetcher: error "+"fetching url %s: %v\n", r.Url, err)
 			continue
 		}
 
@@ -40,7 +40,7 @@ func Ren(seeds ...Request) {
 
 		for _, item := range parseResult.Items {
 
-			log.Printf("Got item %v ", item)
+			log.Printf("engin.go >> Got item %v ", item)
 		}
 	}
 }

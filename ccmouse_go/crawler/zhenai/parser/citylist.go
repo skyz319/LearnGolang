@@ -18,8 +18,10 @@ func ParseCityList(contents []byte) engine.ParseResult {
 
 	//	生成ParseResult
 	result := engine.ParseResult{}
+	//	限制城市数量
+	limit := engine.CityNum
 	for _, m := range all {
-		fmt.Printf("City: %s, URL: %s\n", m[2], m[1])
+		fmt.Printf("citylist.go >> City: %s, URL: %s\n", m[2], m[1])
 
 		//	存相应内容 地外转义为string
 		result.Items = append(result.Items, string(m[2]))
@@ -27,9 +29,17 @@ func ParseCityList(contents []byte) engine.ParseResult {
 			Url:        string(m[1]),
 			ParserFunc: ParseCity,
 		})
+
+		//	限制抓取的城市数量
+		if engine.Limit {
+			limit--
+			if limit == 0 {
+				break
+			}
+		}
 	}
 
-	fmt.Println("Matches found: ", len(all))
+	fmt.Println("citylist.go >> Matches found: ", len(all))
 
 	return result
 }

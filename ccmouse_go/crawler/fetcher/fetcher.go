@@ -15,16 +15,30 @@ import (
 
 func Fetch(url string) ([]byte, error) {
 
-	resp, err := http.Get(url)
+	client := &http.Client{}
+
+	//	生成request
+	request, err := http.NewRequest("GET", url, nil)
+
+	//	添加header
+	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36")
+	if err != nil {
+		fmt.Printf("fetcher >> error: %v\n", err)
+		return nil, err
+	}
+
+	//resp, err := http.Get(url)
+	resp, err := client.Do(request)
 	if err != nil {
 
+		fmt.Printf("fetcher >> error: %v\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 
-		return nil, fmt.Errorf("status code is error! status code :%d\n", resp.StatusCode)
+		return nil, fmt.Errorf("fetcher.go >> status code is error! status code :%d\n", resp.StatusCode)
 	}
 
 	/*
@@ -49,7 +63,7 @@ func determineEncoding(r *bufio.Reader) encoding.Encoding {
 	bytes, err := r.Peek(1024)
 	if err != nil {
 
-		log.Printf("Fetcher error: %v", err)
+		log.Printf("fetcher.go >> Fetcher error: %v", err)
 		//	默认UTF-8
 		return unicode.UTF8
 	}
