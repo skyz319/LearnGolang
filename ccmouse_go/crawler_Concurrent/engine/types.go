@@ -5,9 +5,10 @@ package engine
 const Exclusion = "男士"
 
 //	限制抓取数量
-const Limit = false
+const LimitCity = true
 const CityNum = 10
-const UserNum = 10
+const LimitUser = false
+const UserNum = 50
 
 type Request struct {
 	Url        string

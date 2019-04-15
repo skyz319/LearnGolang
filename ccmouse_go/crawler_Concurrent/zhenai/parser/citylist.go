@@ -31,7 +31,7 @@ func ParseCityList(contents []byte) engine.ParseResult {
 		})
 
 		//	限制抓取的城市数量
-		if engine.Limit {
+		if engine.LimitCity {
 			limit--
 			if limit == 0 {
 				break

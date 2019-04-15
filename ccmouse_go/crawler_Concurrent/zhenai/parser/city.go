@@ -38,7 +38,7 @@ func ParseCity(contents []byte) engine.ParseResult {
 			},
 		})
 
-		if engine.Limit {
+		if engine.LimitUser {
 			limit--
 			if limit == 0 {
 				break
