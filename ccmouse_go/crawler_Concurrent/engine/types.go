@@ -2,7 +2,7 @@
 package engine
 
 //	排除模式 排除指定性别 为空不排除
-const Exclusion = "男士"
+const Exclusion = ""
 
 //	限制抓取数量
 const LimitCity = true

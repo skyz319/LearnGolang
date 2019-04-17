@@ -9,26 +9,32 @@ import (
 type ConcurrentEngine struct {
 	Scheduler   Scheduler //	调度器
 	WorkerCount int       //	worker 数量
+	ItemChan    chan interface{}
 }
 
 //	调度者接口
 type Scheduler interface {
+	ReadNotifier
 	Submit(Request)
-	ConfigureMasterWorkChan(chan Request)
+	WorkerChan() chan Request //	由scheduler分配chan
+	Run()
+}
+
+type ReadNotifier interface {
+	WorkerReady(chan Request)
 }
 
 func (e *ConcurrentEngine) Ren(seeds ...Request) {
 
-	//	输入/输出 队列
-	in := make(chan Request)
+	//	输出 队列
 	out := make(chan ParseResult)
 	//	worker队列
-	e.Scheduler.ConfigureMasterWorkChan(in)
+	e.Scheduler.Run()
 
 	for i := 0; i < e.WorkerCount; i++ {
 
 		//	创建worker
-		e.createWorker(in, out)
+		e.createWorker(e.Scheduler.WorkerChan(), out, e.Scheduler)
 	}
 
 	for _, r := range seeds {
@@ -40,12 +46,12 @@ func (e *ConcurrentEngine) Ren(seeds ...Request) {
 	for {
 
 		result := <-out
-
-		//	计数
-		itemCount := 0
 		for _, item := range result.Items {
 
-			log.Printf("Got item #%d: %s\n", itemCount, item)
+			go func() {
+				//	将数据放入ItemSaver中
+				e.ItemChan <- item
+			}()
 		}
 
 		//	将返回数据中的request 送入调度者
@@ -56,11 +62,13 @@ func (e *ConcurrentEngine) Ren(seeds ...Request) {
 	}
 }
 
-func (e ConcurrentEngine) createWorker(in chan Request, out chan ParseResult) {
+func (e ConcurrentEngine) createWorker(in chan Request, out chan ParseResult, ready ReadNotifier) {
 
 	go func() {
 
 		for {
+
+			ready.WorkerReady(in)
 
 			request := <-in
 
@@ -78,14 +86,14 @@ func (e ConcurrentEngine) createWorker(in chan Request, out chan ParseResult) {
 
 func (e ConcurrentEngine) worker(r Request) (ParseResult, error) {
 
-	log.Printf("engin.go >> Fetching %s", r.Url)
+	//log.Printf("concurrent.go >> Fetching %s", r.Url)
 
 	//	抓取内容
 	body, err := fetcher.Fetch(r.Url)
 	if err != nil {
 
 		//	忽略取出的错误Url
-		log.Printf("engin.go >> Fetcher: error "+"fetching url %s: %v\n", r.Url, err)
+		log.Printf("concurrent.go >> Fetcher: error "+"fetching url %s: %v\n", r.Url, err)
 
 		return ParseResult{}, err
 	}

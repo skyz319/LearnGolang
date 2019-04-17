@@ -8,23 +8,22 @@ import (
 )
 
 //	[^>]* 非右括号的1个或多个字符
-const cityListRe = `<a href="(http://www.zhenai.com/zhenghun/[a-z0-9]+)"[^>]+>([^<]+)</a>`
+var cityListRe = regexp.MustCompile(`<a href="(http://www.zhenai.com/zhenghun/[a-z0-9]+)"[^>]+>([^<]+)</a>`)
 
 //	获取城市列表
 func ParseCityList(contents []byte) engine.ParseResult {
 
-	re := regexp.MustCompile(cityListRe)
-	all := re.FindAllSubmatch(contents, -1)
+	all := cityListRe.FindAllSubmatch(contents, -1)
 
 	//	生成ParseResult
 	result := engine.ParseResult{}
 	//	限制城市数量
 	limit := engine.CityNum
 	for _, m := range all {
-		fmt.Printf("citylist.go >> City: %s, URL: %s\n", m[2], m[1])
+		//fmt.Printf("citylist.go >> City: %s, URL: %s\n", m[2], m[1])
 
 		//	存相应内容 地外转义为string
-		result.Items = append(result.Items, string(m[2]))
+		//result.Items = append(result.Items, string(m[2]))
 		result.Requests = append(result.Requests, engine.Request{
 			Url:        string(m[1]),
 			ParserFunc: ParseCity,
