@@ -24,18 +24,19 @@ func ParseCity(contents []byte) engine.ParseResult {
 	for _, m := range all {
 		name := string(m[2])
 		gender := string(m[3])
+		userURL := string(m[1])
 		//	排除指定性别
 		if gender == engine.Exclusion {
 			break
 		}
 
-		//fmt.Printf("city.go >> Name: %s, Url: %s\n", m[2], m[1])
+		//fmt.Printf("city.go >> Name:Name %s, Url: %s\n", m[2], m[1])
 		//	存相应内容 地外转义为string
 		//result.Items = append(result.Items, name)
 		result.Requests = append(result.Requests, engine.Request{
-			Url: string(m[1]),
+			Url: userURL,
 			ParserFunc: func(c []byte) engine.ParseResult {
-				return ParseProfile(c, name, gender)
+				return ParseProfile(c, name, gender, userURL)
 			},
 		})
 

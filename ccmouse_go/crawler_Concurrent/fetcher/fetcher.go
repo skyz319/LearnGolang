@@ -2,6 +2,7 @@
 package fetcher
 
 import (
+	"LearnGolang/ccmouse_go/crawler_Concurrent/common"
 	"bufio"
 	"fmt"
 	"golang.org/x/net/html/charset"
@@ -14,8 +15,8 @@ import (
 	"time"
 )
 
-//	请求延时 500毫秒
-var rateLimiter = time.Tick(50 * time.Millisecond)
+//	请求延时 200毫秒
+var rateLimiter = time.Tick(200 * time.Millisecond)
 
 func Fetch(url string) ([]byte, error) {
 
@@ -28,7 +29,7 @@ func Fetch(url string) ([]byte, error) {
 	request, err := http.NewRequest("GET", url, nil)
 
 	//	添加header
-	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36")
+	request.Header.Add("User-Agent", common.GetRandUA())
 	if err != nil {
 		fmt.Printf("fetcher >> error: %v\n", err)
 		return nil, err

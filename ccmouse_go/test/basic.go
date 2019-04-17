@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/cmplx"
+	"math/rand"
 )
 
 var (
@@ -85,14 +86,26 @@ func enums() {
 
 func main() {
 	fmt.Println("Hello world")
-	variableZeroValue()
-	variableInitialValue()
-	variableTypeDeduction()
-	variableShorter()
-	fmt.Println(aa, ss, bb)
+	//variableZeroValue()
+	//variableInitialValue()
+	//variableTypeDeduction()
+	//variableShorter()
+	//fmt.Println(aa, ss, bb)
+	//
+	//euler()
+	//triangle()
+	//consts()
+	//enums()
 
-	euler()
-	triangle()
-	consts()
-	enums()
+	i := 0
+
+	for {
+		i = rand.Intn(100)
+		fmt.Println("=====\n", i)
+		if i == 99 {
+			fmt.Println("99")
+			break
+		}
+	}
+
 }

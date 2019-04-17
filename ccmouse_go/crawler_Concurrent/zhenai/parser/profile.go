@@ -2,17 +2,10 @@ package parser
 
 import (
 	"LearnGolang/ccmouse_go/crawler_Concurrent/engine"
+	"LearnGolang/ccmouse_go/crawler_Concurrent/model"
 	"regexp"
 	"strings"
 )
-
-type UserInfo struct {
-	nick   string   //	昵称
-	gender string   //	性别
-	info   []string //	用户信息
-	demand []string //	择偶条件
-	photo  []string //	照片列表
-}
 
 //	个人信息1
 var infoRe = regexp.MustCompile(`<div class="m-btn .*?>([^<]+)</div>`)
@@ -23,19 +16,21 @@ var demandRe = regexp.MustCompile(`<div class="m-btn" .*?>([^<]+)</div>`)
 //	相片
 var photoRe = regexp.MustCompile(`"photoURL":"([^"]+)"`)
 
-func ParseProfile(contents []byte, name, gender string) engine.ParseResult {
+func ParseProfile(contents []byte, name, gender, userURL string) engine.ParseResult {
 
-	var userInfo UserInfo
-	userInfo.nick = name
-	userInfo.gender = gender
-	userInfo.info = extractString(contents, infoRe)
-	userInfo.demand = extractString(contents, demandRe)
-	userInfo.photo = extractString(contents, photoRe)
+	profile := model.Profile{
+		UserURL:  userURL,
+		Name:     name,
+		Gender:   gender,
+		UserInfo: extractString(contents, infoRe),
+		MateInfo: extractString(contents, demandRe),
+		Photos:   extractString(contents, photoRe),
+	}
 
 	//fmt.Printf("UserInfo >> %s\n", userInfo)
 
 	result := engine.ParseResult{
-		Items: []interface{}{userInfo},
+		Items: []interface{}{profile},
 	}
 	return result
 }

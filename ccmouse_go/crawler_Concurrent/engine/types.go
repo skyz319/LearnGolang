@@ -5,10 +5,14 @@ package engine
 const Exclusion = ""
 
 //	限制抓取数量
-const LimitCity = true
+const LimitCity = false
 const CityNum = 20
 const LimitUser = false
 const UserNum = 10
+
+//	ElasticSearch 相关
+const DataBaseName = "dating_profile"
+const TableName = "zhenai"
 
 type Request struct {
 	Url        string
