@@ -14,6 +14,16 @@ const UserNum = 10
 const DataBaseName = "dating_profile"
 const TableName = "zhenai"
 
+type Item struct {
+	//	公用数据URL和ID
+	Url  string
+	Id   string
+	Type string //	项目的表名
+
+	//	适配不同项目使用的数据体
+	Payload interface{}
+}
+
 type Request struct {
 	Url        string
 	ParserFunc func([]byte) ParseResult //	对下级页面的解析器
@@ -21,7 +31,7 @@ type Request struct {
 
 type ParseResult struct {
 	Requests []Request
-	Items    []interface{}
+	Items    []Item
 }
 
 //	解决空parserFunc的问题

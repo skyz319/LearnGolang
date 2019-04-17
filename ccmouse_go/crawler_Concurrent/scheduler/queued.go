@@ -9,6 +9,7 @@ type QueuedScheduler struct {
 	workerChan chan chan engine.Request
 }
 
+//	为每个需要chan的worker新建chan
 func (s *QueuedScheduler) WorkerChan() chan engine.Request {
 
 	return make(chan engine.Request)

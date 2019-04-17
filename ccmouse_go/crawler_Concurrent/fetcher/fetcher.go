@@ -16,7 +16,7 @@ import (
 )
 
 //	请求延时 200毫秒
-var rateLimiter = time.Tick(200 * time.Millisecond)
+var rateLimiter = time.Tick(100 * time.Millisecond)
 
 func Fetch(url string) ([]byte, error) {
 

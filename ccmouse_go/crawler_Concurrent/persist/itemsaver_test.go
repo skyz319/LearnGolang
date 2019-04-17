@@ -1,6 +1,7 @@
 package persist
 
 import (
+	"LearnGolang/ccmouse_go/crawler_Concurrent/engine"
 	"LearnGolang/ccmouse_go/crawler_Concurrent/model"
 	"LearnGolang/ccmouse_go/crawler_Concurrent/zhenai/parser"
 	"context"
@@ -24,7 +25,7 @@ func TestSaver(t *testing.T) {
 
 	t.Logf("%+v", result.Items[0])
 
-	id, err := save(result.Items[0])
+	err = save(result.Items[0])
 
 	if err != nil {
 		panic(err)
@@ -41,12 +42,13 @@ func TestSaver(t *testing.T) {
 	t.Log("===========")
 	//t.Logf("%s", resp.Source)
 
-	var actual model.Profile
-	err = json.Unmarshal(*resp.Source, &actual)
+	//	转换格式
+	var actual engine.Item
+	json.Unmarshal(*resp.Source, &actual)
 
-	if err != nil {
-		panic(err)
-	}
+	actualProfile, _ := model.FromJsonObj(actual.Payload)
 
-	t.Logf("%+v", actual)
+	actual.Payload = actualProfile
+
+	t.Logf("%+v", actualProfile)
 }

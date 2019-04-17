@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+//	用户ID
+var idRe = regexp.MustCompile(`<div class="id".*?">ID：([^<]+)</div>`)
+
 //	个人信息1
 var infoRe = regexp.MustCompile(`<div class="m-btn .*?>([^<]+)</div>`)
 
@@ -19,7 +22,6 @@ var photoRe = regexp.MustCompile(`"photoURL":"([^"]+)"`)
 func ParseProfile(contents []byte, name, gender, userURL string) engine.ParseResult {
 
 	profile := model.Profile{
-		UserURL:  userURL,
 		Name:     name,
 		Gender:   gender,
 		UserInfo: extractString(contents, infoRe),
@@ -30,11 +32,28 @@ func ParseProfile(contents []byte, name, gender, userURL string) engine.ParseRes
 	//fmt.Printf("UserInfo >> %s\n", userInfo)
 
 	result := engine.ParseResult{
-		Items: []interface{}{profile},
+		Items: []engine.Item{
+			{
+				Url:     userURL,
+				Type:    "zhenai",
+				Id:      extractString(idRe),
+				Payload: profile,
+			},
+		},
 	}
+
+	//result := engine.ParseResult{
+	//	Items: []engine.Item{
+	//		URL: userURL,
+	//		Type:"zhenai",
+	//		Id: extractString(contents, idRe),
+	//		Payload: profile,
+	//	},
+	//}
 	return result
 }
 
+// TODO: 需要返回单个sting
 func extractString(contents []byte, re *regexp.Regexp) []string {
 
 	match := re.FindAllSubmatch(contents, -1)

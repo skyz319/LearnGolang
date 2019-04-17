@@ -13,18 +13,18 @@ func main() {
 
 	e := engine.ConcurrentEngine{
 		Scheduler:   &scheduler.QueuedScheduler{},
-		WorkerCount: 100,
+		WorkerCount: 500,
 		ItemChan:    persist.ItemSaver(),
 	}
 
-	//e.Ren(engine.Request{
-	//	Url:        BaseURL,
-	//	ParserFunc: parser.ParseCityList,
-	//})
+	e.Ren(engine.Request{
+		Url:        BaseURL,
+		ParserFunc: parser.ParseCityList,
+	})
 
 	//	爬取单一城市
-	e.Ren(engine.Request{
-		Url:        "http://www.zhenai.com/zhenghun/chengdu",
-		ParserFunc: parser.ParseCity,
-	})
+	//e.Ren(engine.Request{
+	//	Url:        "http://www.zhenai.com/zhenghun/chengdu",
+	//	ParserFunc: parser.ParseCity,
+	//})
 }
